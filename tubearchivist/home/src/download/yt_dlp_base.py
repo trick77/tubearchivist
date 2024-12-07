@@ -35,6 +35,15 @@ class YtWrap:
         """build yt-dlp obs"""
         self.obs = self.OBS_BASE.copy()
         self.obs.update(self.obs_request)
+
+        """add proxy url if set in env"""
+        proxy_url = os.getenv("YTDLP_PROXY_URL")
+        if proxy_url:
+            self.obs["proxy"] = proxy_url
+
+        if self.config:
+            self.add_cookie()
+        
         if self.config:
             self.add_cookie()
 
