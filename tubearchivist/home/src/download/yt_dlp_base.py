@@ -40,9 +40,6 @@ class YtWrap:
         proxy_url = os.getenv("YTDLP_PROXY_URL")
         if proxy_url:
             self.obs["proxy"] = proxy_url
-
-        if self.config:
-            self.add_cookie()
         
         if self.config:
             self.add_cookie()
