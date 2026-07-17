@@ -167,6 +167,10 @@ const VideoPlayer = ({
   const [showInfoDialog, setShowInfoDialog] = useState(false);
   const [infoDialogContent, setInfoDialogContent] = useState('');
   const [isTheaterMode, setIsTheaterMode] = useState(false);
+  // iPadOS 27 beta: a <track> child present while the video loads makes Safari
+  // fail resource selection entirely (networkState 3, no error). Tracked per
+  // media url so a new video starts track-free again without an extra effect.
+  const [subtitlesReadyFor, setSubtitlesReadyFor] = useState<string | null>(null);
 
   const videoId = video.youtube_id;
   const videoUrl = video.media_url;
@@ -391,6 +395,9 @@ const VideoPlayer = ({
               videoTag.currentTarget.volume = volumeFromStorage;
               videoTag.currentTarget.playbackRate = Number(playBackSpeedFromStorage ?? 1);
             }}
+            onLoadedMetadata={() => {
+              setSubtitlesReadyFor(videoUrl);
+            }}
             onTimeUpdate={handleTimeUpdate(
               videoId,
               watched,
@@ -426,7 +433,9 @@ const VideoPlayer = ({
               type="video/mp4"
               id="video-source"
             />
-            {videoSubtitles && <Subtitles subtitles={videoSubtitles} />}
+            {videoSubtitles && subtitlesReadyFor === videoUrl && (
+              <Subtitles subtitles={videoSubtitles} />
+            )}
           </video>
         </div>
       </div>
